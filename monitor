@@ -1,0 +1,24 @@
+#!/bin/sh
+
+while : ; do
+    clear
+    
+    echo '*** Load'
+    top -b 0
+    
+    echo '*** Processes'
+    top -b | head -n 8 | tail -n 1
+    top -b -U anonymine | grep '%' | grep -v 'Swap'
+    top -b -U play | grep '%' | grep -v 'Swap'
+    
+    echo; echo
+    echo '*** Users'
+    who
+    
+    echo; echo
+    echo '*** SSH proxy log'
+    tail -n 10 /var/log/sshproxy
+    
+    sleep 5
+done
+
