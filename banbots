@@ -37,8 +37,13 @@ process ()
 {
     # External userlists: $whitelist, $blacklist and $flag
     
-    # IP is last
-    for x in $1; do IP=$x; done
+    IP=unknown
+    for word in $1; do
+        if [ -n "$(echo $word | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$')" ]; then
+            IP=$word
+        fi
+    done
+    
     for word in $1; do
         for user in $whitelist; do
             if [ $word = $user ]; then return; fi
@@ -60,8 +65,8 @@ process ()
 scan ()
 {
     # Filter out only the interesting parts of the interesting lines:
-    grep -E '^[A-Z][a-z][a-z] [0-9 ][0-9] [0-9:]+ '"$(hostname)"' sshd\[[0-9]+\]: error: PAM: authentication error for' \
-        | cut -dr -f8- | cut -c2- \
+    grep -E '^[A-Z][a-z][a-z] [0-9 ][0-9] [0-9:]+ '"$(hostname)"' sshd\[[0-9]+\]: error: .*authentication.*' \
+        | cut -d: -f5- | cut -c2- \
         | (while IFS= read -r line; do process "$line"; done)
 }
 
